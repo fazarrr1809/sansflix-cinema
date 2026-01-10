@@ -43,3 +43,6 @@ Ikuti langkah-langkah di bawah untuk menjalankan Sansflix di komputer Anda:
    ```bash
    git clone [https://github.com/fazarrr1809/sansflix-cinema.git](https://github.com/fazarrr1809/sansflix-cinema.git)
    cd sansflix-cinema
+2. **Instal Dependensi (PHP & JS)**
+   composer install
+   npm install && npm run build
