@@ -1,13 +1,7 @@
 # 🎬 Sansflix Cinema - Modern Movie Ticket & F&B Booking System
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Laravel-12.x-red?style=for-the-badge&logo=laravel" alt="Laravel Version">
-  <img src="https://img.shields.io/badge/Filament-3.x-yellow?style=for-the-badge&logo=filament" alt="Filament Version">
-  <img src="https://img.shields.io/badge/Tailwind-3.x-blue?style=for-the-badge&logo=tailwind-css" alt="Tailwind Version">
+  <img src="https://fazarrizwanuli.wordpress.com/wp-content/uploads/2026/01/sansflix-logo.png.png?w=1024" width="300" alt="Sansflix Logo">
 </p>
 
 ## 🚀 Tentang Proyek
