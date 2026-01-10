@@ -103,6 +103,7 @@
                             </div>
                         </div>
                         <span class="text-gray-600">|</span>
+                        <a href="<?php echo e(route('profile.index')); ?>" class="text-white hover:text-red-600 transition uppercase font-bold text-sm">Profil Saya</a>
                         
                         <div class="flex items-center gap-3">
                             <span class="text-gray-300 text-sm font-bold truncate max-w-[120px]">Hi, <?php echo e(Auth::user()->name); ?></span>

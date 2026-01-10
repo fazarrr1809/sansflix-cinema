@@ -59,7 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/booking/ticket/{id}', [BookingController::class, 'showTicket'])->name('booking.ticket');
     Route::get('/food-order/receipt/{id}', [CartController::class, 'showReceipt'])->name('food.receipt');
     Route::get('/food/download-receipt/{id}', [CartController::class, 'downloadReceipt'])->name('food.download');
-
+    
+    //update avatar user
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

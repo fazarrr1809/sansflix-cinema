@@ -3,27 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Tambahkan ini
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class ProfileController extends Controller
 {
-    public function index() 
-    {
-        // Menggunakan Facade Auth agar metode 'user()' terdeteksi dengan jelas
-        $user = Auth::user(); 
-
-        return view('profile.index', compact('user'));
+    public function index() {
+        return view('profile.index', ['user' => Auth::user()]);
     }
 
     public function update(Request $request) {
-        // Gunakan Auth::user() untuk menghindari error deteksi
-        $user = Auth::user(); 
-        
-        // Cek jika user tidak ada (opsional untuk keamanan)
-        if (!$user) {
-            return redirect()->route('login');
-        }
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -31,16 +22,21 @@ class ProfileController extends Controller
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $user->name = $request->name;
-        $user->username = $request->username;
-
         if ($request->hasFile('avatar')) {
-            $fileName = time().'_'.$user->id.'.'.$request->avatar->extension();
+            // Hapus foto lama jika ada dan bukan dari Google
+            if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+                File::delete(public_path('uploads/avatars/' . $user->avatar));
+            }
+
+            $fileName = time() . '_' . $user->id . '.' . $request->avatar->extension();
             $request->avatar->move(public_path('uploads/avatars'), $fileName);
             $user->avatar = $fileName;
         }
 
+        $user->name = $request->name;
+        $user->username = $request->username;
         $user->save();
+
         return back()->with('success', 'Profil berhasil diperbarui!');
     }
 }
