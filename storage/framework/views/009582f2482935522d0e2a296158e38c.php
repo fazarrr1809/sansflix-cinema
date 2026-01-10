@@ -103,16 +103,37 @@
                             </div>
                         </div>
                         <span class="text-gray-600">|</span>
-                        <a href="<?php echo e(route('profile.index')); ?>" class="text-white hover:text-red-600 transition uppercase font-bold text-sm">Profil Saya</a>
-                        
-                        <div class="flex items-center gap-3">
-                            <span class="text-gray-300 text-sm font-bold truncate max-w-[120px]">Hi, <?php echo e(Auth::user()->name); ?></span>
-                            <form action="<?php echo e(route('logout')); ?>" method="POST" class="inline">
-                                <?php echo csrf_field(); ?>
-                                <button type="submit" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-600/50 px-4 py-1.5 rounded-lg transition text-xs font-bold">
-                                    Logout
-                                </button>
-                            </form>
+                        <div class="flex items-center gap-4">
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+                                
+                                <a href="<?php echo e(route('profile.index')); ?>" class="group relative inline-block">
+                                    <div class="relative w-10 h-10 overflow-hidden rounded-full border-2 border-gray-700 group-hover:border-red-600 transition-all duration-300 shadow-lg">
+                                        <img 
+                                            src="<?php echo e(Auth::user()->avatar ? (str_starts_with(Auth::user()->avatar, 'http') ? Auth::user()->avatar : asset('uploads/avatars/'.Auth::user()->avatar)) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=E50914&color=fff'); ?>" 
+                                            alt="Profile"
+                                            class="w-full h-full object-cover"
+                                        >
+                                    </div>
+                                    
+                                    
+                                    <span class="absolute -bottom-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter whitespace-nowrap z-50">
+                                        <?php echo e(Auth::user()->name); ?>
+
+                                    </span>
+                                </a>
+
+                                
+                                <form action="<?php echo e(route('logout')); ?>" method="POST" class="ml-2">
+                                    <?php echo csrf_field(); ?>
+                                    <button type="submit" class="text-gray-400 hover:text-white transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <a href="<?php echo e(route('login')); ?>" class="text-white font-bold text-sm uppercase">Login</a>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
                 <?php else: ?>
