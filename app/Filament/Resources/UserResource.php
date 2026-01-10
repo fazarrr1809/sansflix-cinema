@@ -14,13 +14,12 @@ use Carbon\Carbon;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    protected static ?string $navigationIcon = 'heroicon-o-users'; // Ikon di sidebar
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->columns([
-                // Menampilkan Foto Profil
                 ImageColumn::make('avatar')
                     ->circular()
                     ->disk('public')
@@ -34,7 +33,6 @@ class UserResource extends Resource
                 TextColumn::make('email')
                     ->copyable(),
 
-                // Menampilkan Tanggal Lahir & Umur
                 TextColumn::make('dob')
                     ->label('Umur')
                     ->formatStateUsing(fn ($state) => $state 
@@ -46,12 +44,20 @@ class UserResource extends Resource
                     ->dateTime()
                     ->label('Terdaftar Pada'),
             ])
-            ->filters([
-                // Tambahkan filter jika perlu (misal: filter umur > 15)
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ]);
+    }
+
+    // INI BAGIAN YANG HILANG DAN WAJIB ADA:
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
+        ];
     }
 }
