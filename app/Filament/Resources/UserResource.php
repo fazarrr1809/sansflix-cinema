@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -22,10 +23,8 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    // Ikon yang muncul di sidebar admin
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    // Grouping di sidebar (Opsional, agar rapi)
     protected static ?string $navigationLabel = 'Manajemen User';
 
     /**
@@ -58,8 +57,18 @@ class UserResource extends Resource
                         DatePicker::make('dob')
                             ->label('Tanggal Lahir')
                             ->required()
-                            ->maxDate(now()->subYears(15)) // Validasi minimal 15 tahun
+                            ->maxDate(now()->subYears(15))
                             ->displayFormat('d/m/Y'),
+
+                        // Tambahkan input Select Role di Form agar Admin bisa mengubah role user lain
+                        Select::make('role')
+                            ->label('Role Akses')
+                            ->options([
+                                'admin' => 'Admin',
+                                'customer' => 'Customer',
+                            ])
+                            ->required()
+                            ->native(false),
                     ])->columns(2),
 
                 Section::make('Media & Keamanan')
@@ -69,13 +78,13 @@ class UserResource extends Resource
                             ->image()
                             ->disk('public')
                             ->directory('uploads/avatars')
-                            ->avatar() // Membuat tampilan upload jadi lingkaran
+                            ->avatar()
                             ->imageEditor(),
 
                         TextInput::make('password')
                             ->label('Password Baru')
                             ->password()
-                            ->dehydrated(fn ($state) => filled($state)) // Hanya dikirim jika diisi
+                            ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create')
                             ->placeholder('Kosongkan jika tidak ingin mengubah password'),
                     ])->columns(2),
@@ -95,19 +104,27 @@ class UserResource extends Resource
                     ->disk('public')
                     ->getStateUsing(function ($record) {
                         if (!$record->avatar) return null;
-
-                        // Jika avatar adalah URL lengkap (Google Auth), pakai langsung
                         if (filter_var($record->avatar, FILTER_VALIDATE_URL)) {
                             return $record->avatar;
                         }
-
-                        // Jika file lokal, arahkan ke path storage
                         return 'uploads/avatars/' . $record->avatar;
                     }),
 
                 TextColumn::make('name')
                     ->label('Nama Lengkap')
                     ->searchable()
+                    ->sortable(),
+
+                // BAGIAN BADGE ROLE
+                TextColumn::make('role')
+                    ->label('Role')
+                    ->badge() // Mengaktifkan tampilan badge
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'danger',    // Warna Merah untuk Admin
+                        'customer' => 'gray',   // Warna Abu-abu untuk Customer
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state)) // Kapital huruf depan
                     ->sortable(),
 
                 TextColumn::make('email')
@@ -130,7 +147,13 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                // Anda bisa menambahkan filter umur di sini nanti
+                // Tambahkan Filter Role agar Admin bisa memfilter daftar berdasarkan Role
+                Tables\Filters\SelectFilter::make('role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'customer' => 'Customer',
+                    ])
+                    ->label('Filter Role'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -143,9 +166,6 @@ class UserResource extends Resource
             ]);
     }
 
-    /**
-     * REGISTRASI HALAMAN
-     */
     public static function getPages(): array
     {
         return [

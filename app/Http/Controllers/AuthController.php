@@ -18,19 +18,19 @@ class AuthController extends Controller
     // Proses Register
     public function register(Request $request)
     {
-        // 1. Validasi Input yang Lebih Ketat
+        // 1. Validasi Input
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:30|unique:users,username', // Username unik
-            'dob' => 'required|date|before_or_equal:' . now()->subYears(15)->format('Y-m-d'), // Validasi umur min 15
+            'username' => 'required|string|max:30|unique:users,username',
+            'dob' => 'required|date|before_or_equal:' . now()->subYears(15)->format('Y-m-d'), 
             'email' => 'required|string|email|max:255|unique:users',
             'password' => [
                 'required',
                 'confirmed',
                 'min:8',
-                'regex:/[a-z]/',      // Minimal satu huruf kecil
-                'regex:/[A-Z]/',      // Minimal satu huruf besar
-                'regex:/[0-9]/',      // Minimal satu angka
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
             ],
         ], [
             'dob.before_or_equal' => 'Anda harus berusia minimal 15 tahun untuk mendaftar.',
@@ -41,10 +41,11 @@ class AuthController extends Controller
         // 2. Simpan ke Database
         $user = User::create([
             'name' => $request->name,
-            'username' => $request->username, // Simpan Username
+            'username' => $request->username,
             'email' => $request->email,
-            'birth_date' => $request->birth_date, // Simpan Tanggal Lahir
+            'dob' => $request->dob, // Pastikan menggunakan kolom 'dob' sesuai migrasi terakhir
             'password' => Hash::make($request->password),
+            'role' => 'customer', // Default saat daftar adalah customer
         ]);
 
         // 3. Login & Redirect
@@ -59,7 +60,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Proses Login
+    // Proses Login (MODIFIKASI REDIRECT ROLE)
     public function login(Request $request)
     {
         // 1. Validasi
@@ -71,7 +72,15 @@ class AuthController extends Controller
         // 2. Coba Login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            // Jika sukses, masuk ke Home (atau halaman yang tadi mau dibuka)
+            
+            /** * LOGIKA PENGALIHAN BERDASARKAN ROLE
+             * Jika role adalah admin, arahkan ke dashboard Filament.
+             * Jika customer, arahkan ke halaman home bioskop.
+             */
+            if (Auth::user()->role === 'admin') {
+                return redirect()->intended('/admin');
+            }
+
             return redirect()->intended('/');
         }
 

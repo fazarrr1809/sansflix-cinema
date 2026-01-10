@@ -33,7 +33,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
+// app/Models/User.php
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return $this->role === 'admin';
+    }
     protected $fillable = [
         'name',
         'email',
