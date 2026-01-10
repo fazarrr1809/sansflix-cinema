@@ -5,32 +5,114 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
+    // Ikon yang muncul di sidebar admin
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    public static function table(Tables\Table $table): Tables\Table
+    // Grouping di sidebar (Opsional, agar rapi)
+    protected static ?string $navigationLabel = 'Manajemen User';
+
+    /**
+     * KONFIGURASI FORM (UNTUK EDIT & TAMBAH)
+     */
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make('Informasi Profil')
+                    ->description('Data utama akun pengguna.')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nama Lengkap')
+                            ->required()
+                            ->maxLength(255),
+
+                        TextInput::make('username')
+                            ->label('Username')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+
+                        TextInput::make('email')
+                            ->label('Alamat Email')
+                            ->email()
+                            ->required()
+                            ->unique(ignoreRecord: true),
+
+                        DatePicker::make('dob')
+                            ->label('Tanggal Lahir')
+                            ->required()
+                            ->maxDate(now()->subYears(15)) // Validasi minimal 15 tahun
+                            ->displayFormat('d/m/Y'),
+                    ])->columns(2),
+
+                Section::make('Media & Keamanan')
+                    ->schema([
+                        FileUpload::make('avatar')
+                            ->label('Foto Profil')
+                            ->image()
+                            ->disk('public')
+                            ->directory('uploads/avatars')
+                            ->avatar() // Membuat tampilan upload jadi lingkaran
+                            ->imageEditor(),
+
+                        TextInput::make('password')
+                            ->label('Password Baru')
+                            ->password()
+                            ->dehydrated(fn ($state) => filled($state)) // Hanya dikirim jika diisi
+                            ->required(fn (string $context): bool => $context === 'create')
+                            ->placeholder('Kosongkan jika tidak ingin mengubah password'),
+                    ])->columns(2),
+            ]);
+    }
+
+    /**
+     * KONFIGURASI TABEL (DAFTAR USER)
+     */
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 ImageColumn::make('avatar')
+                    ->label('Foto')
                     ->circular()
                     ->disk('public')
-                    ->prefix('uploads/avatars/'),
+                    ->getStateUsing(function ($record) {
+                        if (!$record->avatar) return null;
+
+                        // Jika avatar adalah URL lengkap (Google Auth), pakai langsung
+                        if (filter_var($record->avatar, FILTER_VALIDATE_URL)) {
+                            return $record->avatar;
+                        }
+
+                        // Jika file lokal, arahkan ke path storage
+                        return 'uploads/avatars/' . $record->avatar;
+                    }),
 
                 TextColumn::make('name')
+                    ->label('Nama Lengkap')
                     ->searchable()
-                    ->sortable()
-                    ->label('Nama Lengkap'),
+                    ->sortable(),
 
                 TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
                     ->copyable(),
 
                 TextColumn::make('dob')
@@ -38,20 +120,32 @@ class UserResource extends Resource
                     ->formatStateUsing(fn ($state) => $state 
                         ? Carbon::parse($state)->age . ' Tahun' 
                         : 'Belum diisi')
-                    ->color('danger'),
+                    ->color('danger')
+                    ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->label('Terdaftar Pada'),
+                    ->label('Terdaftar')
+                    ->dateTime('d M Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([])
+            ->filters([
+                // Anda bisa menambahkan filter umur di sini nanti
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
-    // INI BAGIAN YANG HILANG DAN WAJIB ADA:
+    /**
+     * REGISTRASI HALAMAN
+     */
     public static function getPages(): array
     {
         return [
