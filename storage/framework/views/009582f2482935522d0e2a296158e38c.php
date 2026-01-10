@@ -77,67 +77,62 @@
                 </a>
             </div>
 
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center gap-4">
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
-                    <div class="flex items-center gap-6">
-                        <div class="relative inline-block group">
-                            <button class="text-gray-300 group-hover:text-white transition text-sm flex items-center gap-2 outline-none py-2">
-                                <div class=" hover:bg-red-600 transition">
-                                    <i class="fas fa-history text-white text-xs"></i>
-                                </div>
-                                <span class="hidden sm:inline font-medium">Riwayat</span>
-                                <i class="fas fa-chevron-down text-[10px] ml-1 opacity-50 transition-transform group-hover:rotate-180"></i>
-                            </button>
-                            
-                            <div class="absolute right-0 w-56 pt-2 bg-transparent opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-[999]">
-                                <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                                    <a href="<?php echo e(route('booking.history')); ?>" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-red-600 hover:text-white transition border-b border-gray-700/50">
-                                        <i class="fas fa-ticket-alt w-5 text-red-500 group-hover:text-white"></i> 
-                                        <span>Tiket Saya</span>
-                                    </a>
-                                    <a href="<?php echo e(route('food.history')); ?>" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-yellow-600 hover:text-white transition">
-                                        <i class="fas fa-hamburger w-5 text-yellow-500 group-hover:text-white"></i> 
-                                        <span>Pesanan Makanan</span>
-                                    </a>
-                                </div>
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" @click.away="open = false" class="flex items-center focus:outline-none">
+                            <div class="w-10 h-10 overflow-hidden rounded-full border-2 border-gray-700 hover:border-red-600 transition-all shadow-lg">
+                                <img 
+                                    src="<?php echo e(Auth::user()->avatar ? (str_starts_with(Auth::user()->avatar, 'http') ? Auth::user()->avatar : asset('uploads/avatars/'.Auth::user()->avatar)) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=E50914&color=fff'); ?>" 
+                                    alt="Profile"
+                                    class="w-full h-full object-cover"
+                                >
                             </div>
-                        </div>
-                        <span class="text-gray-600">|</span>
-                        <div class="flex items-center gap-4">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
-                                
-                                <a href="<?php echo e(route('profile.index')); ?>" class="group relative inline-block">
-                                    <div class="relative w-10 h-10 overflow-hidden rounded-full border-2 border-gray-700 group-hover:border-red-600 transition-all duration-300 shadow-lg">
-                                        <img 
-                                            src="<?php echo e(Auth::user()->avatar ? (str_starts_with(Auth::user()->avatar, 'http') ? Auth::user()->avatar : asset('uploads/avatars/'.Auth::user()->avatar)) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=E50914&color=fff'); ?>" 
-                                            alt="Profile"
-                                            class="w-full h-full object-cover"
-                                        >
-                                    </div>
-                                    
-                                    
-                                    <span class="absolute -bottom-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-tighter whitespace-nowrap z-50">
-                                        <?php echo e(Auth::user()->name); ?>
+                        </button>
 
-                                    </span>
-                                </a>
+                        <div x-show="open" 
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 mt-3 w-48 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl py-2 z-50">
+                            
+                            <div class="px-4 py-2 border-b border-white/5 mb-2">
+                                <p class="text-xs text-gray-500 uppercase font-black tracking-tighter">Halo,</p>
+                                <p class="text-sm text-white font-bold truncate"><?php echo e(Auth::user()->name); ?></p>
+                            </div>
 
-                                
-                                <form action="<?php echo e(route('logout')); ?>" method="POST" class="ml-2">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" class="text-gray-400 hover:text-white transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                        </svg>
-                                    </button>
-                                </form>
-                            <?php else: ?>
-                                <a href="<?php echo e(route('login')); ?>" class="text-white font-bold text-sm uppercase">Login</a>
-                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-red-600 hover:text-white transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Profil Saya
+                            </a>
+
+                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-red-600 hover:text-white transition">
+                                <svg xmlns="http://www.w3.org/2000/center" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                Riwayat Tiket
+                            </a>
+
+                            <hr class="border-white/5 my-1">
+
+                            <form action="<?php echo e(route('logout')); ?>" method="POST">
+                                <?php echo csrf_field(); ?>
+                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-600 hover:text-white transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Keluar
+                                </button>
+                            </form>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="<?php echo e(route('login')); ?>" class="text-gray-300 hover:text-white font-medium mr-2">Masuk</a>
+                    <a href="<?php echo e(route('login')); ?>" class="bg-red-600 text-white px-5 py-2 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-red-700 transition">Login</a>
                     <a href="<?php echo e(route('register')); ?>" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg transition text-sm font-bold shadow-lg shadow-red-600/30 text-center">
                         Daftar
                     </a>
