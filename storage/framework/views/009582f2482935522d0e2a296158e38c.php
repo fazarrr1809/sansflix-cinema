@@ -137,7 +137,19 @@
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="<?php echo e(route('login')); ?>" class="bg-red-600 text-white px-5 py-2 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-red-700 transition">Login</a>
+                    <a href="<?php echo e(route('register')); ?>" class="group flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:text-red-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            <span class="text-xs font-black uppercase tracking-widest">Daftar</span>
+        </a>
+
+        <a href="<?php echo e(route('login')); ?>" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-full shadow-[0_4px_15px_rgba(220,38,38,0.3)] transition-all duration-300 transform hover:-translate-y-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span class="text-xs font-black uppercase tracking-widest">Masuk</span>
+        </a>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
