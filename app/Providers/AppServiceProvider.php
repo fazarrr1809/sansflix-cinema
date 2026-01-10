@@ -25,10 +25,12 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin') // URL akan menjadi /admin
-            ->login()      // Mengaktifkan fitur login bawaan Filament
+            ->path('admin')
+            ->login()
+            ->brandName('Sansflix Admin') 
+            ->favicon('https://fazarrizwanuli.wordpress.com/wp-content/uploads/2026/01/picsart_26-01-07_23-54-57-173.png?w=1400&h=') 
             ->colors([
-                'primary' => Color::Red, // Sesuai tema Sansflix (Merah)
+                'primary' => Color::Red,
             ])
             // Baris krusial: Mencari UserResource secara otomatis
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

@@ -82,8 +82,12 @@
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" @click.away="open = false" class="flex items-center focus:outline-none">
                             <div class="w-10 h-10 overflow-hidden rounded-full border-2 border-gray-700 hover:border-red-600 transition-all shadow-lg">
-                                <img 
-                                    src="{{ Auth::user()->avatar ? (str_starts_with(Auth::user()->avatar, 'http') ? Auth::user()->avatar : asset('uploads/avatars/'.Auth::user()->avatar)) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=E50914&color=fff' }}" 
+                               <img 
+                                    src="{{ Auth::user()->avatar 
+                                        ? (filter_var(Auth::user()->avatar, FILTER_VALIDATE_URL) 
+                                            ? Auth::user()->avatar 
+                                            : asset('storage/' . (str_starts_with(Auth::user()->avatar, 'uploads/avatars/') ? Auth::user()->avatar : 'uploads/avatars/' . Auth::user()->avatar))) 
+                                        : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=E50914&color=fff' }}" 
                                     alt="Profile"
                                     class="w-full h-full object-cover"
                                 >

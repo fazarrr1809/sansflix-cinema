@@ -104,9 +104,18 @@ class UserResource extends Resource
                     ->disk('public')
                     ->getStateUsing(function ($record) {
                         if (!$record->avatar) return null;
+
+                        // 1. Jika sudah berupa URL lengkap (Google Auth), pakai langsung
                         if (filter_var($record->avatar, FILTER_VALIDATE_URL)) {
                             return $record->avatar;
                         }
+
+                        // 2. Jika di database sudah ada path-nya, gunakan langsung
+                        if (str_starts_with($record->avatar, 'uploads/avatars/')) {
+                            return $record->avatar;
+                        }
+
+                        // 3. Jika hanya nama file, tambahkan path foldernya
                         return 'uploads/avatars/' . $record->avatar;
                     }),
 
