@@ -55,11 +55,25 @@
                                 <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Username</label>
                                 <input type="text" name="username" value="{{ $user->username }}" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-red-600 transition outline-none mt-1">
                             </div>
-                            <div>
-                                <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Tanggal Lahir</label>
-                                <input type="text" value="{{ \Carbon\Carbon::parse($user->dob)->format('d F Y') }}" disabled class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-500 mt-1 cursor-not-allowed">
-                                <p class="text-[10px] text-gray-600 mt-1">*Tanggal lahir tidak dapat diubah</p>
-                            </div>
+                          <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Tanggal Lahir</label>
+                            @if($user->dob)
+                                {{-- Jika sudah ada --}}
+                                <input type="text" value="{{ \Carbon\Carbon::parse($user->dob)->format('d F Y') }}" disabled 
+                                    class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-500 mt-1 cursor-not-allowed">
+                            @else
+                                {{-- Jika kosong (User Google) --}}
+                                <input type="date" name="dob" required 
+                                    max="{{ \Carbon\Carbon::now()->subYears(15)->format('Y-m-d') }}"
+                                    class="w-full bg-gray-800 border @error('dob') border-red-600 @else border-gray-700 @enderror rounded-xl px-4 py-3 text-white focus:border-red-600 transition outline-none mt-1">
+                                
+                                @error('dob')
+                                    <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p>
+                                @else
+                                    <p class="text-[10px] text-gray-400 mt-1">*Minimal usia 15 tahun untuk verifikasi akun.</p>
+                                @enderror
+                            @endif
+                        </div>
                             <div>
                                 <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Email</label>
                                 <input type="email" value="{{ $user->email }}" disabled class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-500 mt-1 cursor-not-allowed">

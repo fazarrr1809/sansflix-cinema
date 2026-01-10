@@ -33,4 +33,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'username', // Pastikan ini juga ada
+        'dob',      // Tambahkan ini
+        'avatar',   // Pastikan ini juga ada
+    ];
 }

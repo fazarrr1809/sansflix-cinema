@@ -28,10 +28,15 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,' . $user->id,
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            // Validasi password opsional (hanya jika diisi)
+            'dob' => $user->dob ? 'nullable' : 'required|date|before:today',
+            'dob.before_or_equal' => 'Maaf, usia minimal untuk mendaftar Sansflix adalah 15 tahun.',
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
         ]);
+
+        if (!$user->dob && $request->filled('dob')) {
+            $user->dob = $request->dob;
+        }
 
         // Logika Ganti Password
         if ($request->filled('new_password')) {

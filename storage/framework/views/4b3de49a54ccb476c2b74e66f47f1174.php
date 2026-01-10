@@ -56,11 +56,39 @@
                                 <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Username</label>
                                 <input type="text" name="username" value="<?php echo e($user->username); ?>" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-red-600 transition outline-none mt-1">
                             </div>
-                            <div>
-                                <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Tanggal Lahir</label>
-                                <input type="text" value="<?php echo e(\Carbon\Carbon::parse($user->dob)->format('d F Y')); ?>" disabled class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-500 mt-1 cursor-not-allowed">
-                                <p class="text-[10px] text-gray-600 mt-1">*Tanggal lahir tidak dapat diubah</p>
-                            </div>
+                          <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Tanggal Lahir</label>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->dob): ?>
+                                
+                                <input type="text" value="<?php echo e(\Carbon\Carbon::parse($user->dob)->format('d F Y')); ?>" disabled 
+                                    class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-500 mt-1 cursor-not-allowed">
+                            <?php else: ?>
+                                
+                                <input type="date" name="dob" required 
+                                    max="<?php echo e(\Carbon\Carbon::now()->subYears(15)->format('Y-m-d')); ?>"
+                                    class="w-full bg-gray-800 border <?php $__errorArgs = ['dob'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-600 <?php else: ?> border-gray-700 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?> rounded-xl px-4 py-3 text-white focus:border-red-600 transition outline-none mt-1">
+                                
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['dob'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-[10px] text-red-500 mt-1"><?php echo e($message); ?></p>
+                                <?php else: ?>
+                                    <p class="text-[10px] text-gray-400 mt-1">*Minimal usia 15 tahun untuk verifikasi akun.</p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </div>
                             <div>
                                 <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Email</label>
                                 <input type="email" value="<?php echo e($user->email); ?>" disabled class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-500 mt-1 cursor-not-allowed">
