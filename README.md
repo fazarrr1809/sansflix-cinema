@@ -59,54 +59,60 @@ Pengguna dapat memilih film, jadwal, kursi, hingga memesan makanan dan minuman d
 ---
 
 ## 📂 Struktur Project
-sansflix-cinema/
-├── app/ # Logic aplikasi (Controller, Model, Service)
-├── bootstrap/
-├── config/
-├── database/ # Migration & Seeder
-├── public/ # Asset publik
-├── resources/ # Blade views & frontend assets
-├── routes/ # Routing web
-├── tests/
-├── .env.example
-├── composer.json
-├── package.json
-└── README.md
 
+Struktur direktori ini mengikuti standar arsitektur **Laravel 11**, yang memisahkan logika bisnis, tampilan, dan konfigurasi secara sistematis:
+
+```text
+sansflix-cinema/
+├── app/
+│   ├── Filament/       # Konfigurasi Admin Panel (Resources, Widgets, Pages)
+│   ├── Http/
+│   │   └── Controllers/# Logika alur aplikasi (Auth, Booking, Movie, News, dll)
+│   ├── Mail/           # Class untuk pengiriman email konfirmasi (Ticket & Receipt)
+│   └── Models/         # Definisi Database & Relasi Eloquent (Movie, Showtime, User, dll)
+├── bootstrap/          # Inisialisasi framework & konfigurasi routing aplikasi
+├── config/             # Kumpulan file konfigurasi sistem (Database, Mail, Services)
+├── database/
+│   ├── migrations/     # Skema struktur tabel database
+│   └── seeders/        # Data dummy untuk pengujian sistem (Movie, Showtime, Promo)
+├── public/             # Entry point (index.php) dan asset yang dapat diakses publik
+├── resources/
+│   ├── css/            # Style utama menggunakan Tailwind CSS
+│   ├── js/             # Script frontend & integrasi Swiper.js
+│   └── views/          # Template tampilan menggunakan Blade Engine
+├── routes/
+│   ├── web.php         # Definisi routing utama untuk user
+│   └── console.php     # Perintah custom artisan
+├── storage/            # Tempat penyimpanan file upload (Avatar, Bukti Bayar) & Log
+├── tests/              # File pengujian unit dan fitur
+├── .env.example        # Template konfigurasi environment
+├── composer.json       # Daftar dependency PHP (Laravel, Filament, Socialite)
+├── package.json        # Daftar dependency Node.js (Tailwind, Vite, Alpine.js)
+└── README.md           # Dokumentasi proyek
 
 ---
 
 ## ⚙️ Cara Instalasi
 
-### 1️ Clone Repository
+### 1️⃣ Install Dependency
 ```bash
-git clone https://github.com/fazarrr1809/sansflix-cinema.git
-cd sansflix-cinema
-
-### 2️⃣ Install Dependency
-''' bash
 composer install
 npm install
 
-### 3️⃣ Konfigurasi Environment
-''' bash
+2️⃣ Konfigurasi Environment
 cp .env.example .env
 php artisan key:generate
-Atur konfigurasi database pada file .env
 
-### 4️⃣ Migrasi & Seeder Database
-''' bash
+3️⃣ Migrasi & Seeder Database
 php artisan migrate --seed
 
-### 5️⃣ Jalankan Aplikasi
-''' bash
+4️⃣ Jalankan Aplikasi
 php artisan serve
 npm run dev
-
-Akses aplikasi di:
+Akses aplikasi di browser:
 http://127.0.0.1:8000/
 
-
+---
 📌 Tujuan Project
 
 Project ini dikembangkan sebagai:
