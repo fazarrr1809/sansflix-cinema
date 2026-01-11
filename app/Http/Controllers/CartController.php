@@ -8,6 +8,7 @@ use App\Models\FoodOrderItem;
 use App\Mail\FoodReceiptMail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,21 +36,49 @@ class CartController extends Controller
                 "image" => $product->image_url
             ];
         }
-
         session()->put('cart', $cart);
-        return redirect()->back()->with('success', 'Berhasil ditambahkan ke keranjang! 🍿');
+
+        // Cek jika request via AJAX
+        if ($request->ajax()) {
+            return response()->json([
+                'cart_count' => array_sum(array_column($cart, 'quantity'))
+            ]);
+        }
+
+        return redirect()->back();
     }
 
-    public function remove(Request $request)
+   public function updateQuantity(Request $request)
     {
-        if($request->id) {
-            $cart = session()->get('cart');
-            if(isset($cart[$request->id])) {
-                unset($cart[$request->id]);
-                session()->put('cart', $cart);
+        $cart = session()->get('cart');
+        $id = $request->id;
+        $change = $request->change;
+        $itemRemoved = false;
+
+        if(isset($cart[$id])) {
+            $cart[$id]['quantity'] += $change;
+
+            if($cart[$id]['quantity'] <= 0) {
+                unset($cart[$id]);
+                $itemRemoved = true;
             }
-            return redirect()->back()->with('success', 'Menu dihapus dari keranjang.');
+            session()->put('cart', $cart);
         }
+
+        // Hitung ulang total semua item di keranjang
+        $newTotal = 0;
+        foreach($cart as $item) {
+            $newTotal += $item['price'] * $item['quantity'];
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'item_removed' => $itemRemoved,
+            'new_qty' => $itemRemoved ? 0 : $cart[$id]['quantity'],
+            'new_subtotal' => $itemRemoved ? 0 : ($cart[$id]['price'] * $cart[$id]['quantity']),
+            'new_total' => $newTotal,
+            'cart_count' => array_sum(array_column($cart, 'quantity'))
+        ]);
     }
 
     public function checkout(Request $request)
@@ -72,8 +101,6 @@ class CartController extends Controller
             ]);
         }
 
-        session()->forget('cart');
-
         // Arahkan ke halaman simulasi pembayaran
         return redirect()->route('cart.payment', $order->id);
     }
@@ -87,7 +114,7 @@ class CartController extends Controller
 
     // Tahap 3: Proses Bayar (Mengubah status jadi Paid)
    public function payProses(Request $request, $id)
-{
+    {
     $request->validate([
         'payment_method' => 'required'
     ]);
@@ -101,11 +128,12 @@ class CartController extends Controller
 
     // Tambahkan baris ini untuk mengirim email
     try {
-        \Mail::to($order->user->email)->send(new \App\Mail\FoodReceiptMail($order));
+        Mail::to($order->user->email)->send(new \App\Mail\FoodReceiptMail($order));
     } catch (\Exception $e) {
         // Jika error, log pesannya agar Anda tahu penyebabnya
-        \Log::error("Email Gagal: " . $e->getMessage());
+        Log::error("Email Gagal: " . $e->getMessage());
     }
+    session()->forget('cart'); 
 
     return redirect()->route('food.history')->with('success', 'Pembayaran Berhasil!');
 }

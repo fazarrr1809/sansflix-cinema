@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/food-history', [CartController::class, 'history'])->name('food.history');
     Route::get('/cart/payment/{id}', [CartController::class, 'payment'])->name('cart.payment');
     Route::post('/cart/payment/{id}/proses', [CartController::class, 'payProses'])->name('cart.pay_proses');
+    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update_quantity');
     
     // Rute Keranjang
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');

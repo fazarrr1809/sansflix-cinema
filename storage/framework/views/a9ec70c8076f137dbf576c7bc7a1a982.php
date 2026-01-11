@@ -48,12 +48,12 @@
                             <span class="text-yellow-500 font-black text-xl">Rp <?php echo e(number_format($item->price, 0, ',', '.')); ?></span>
                         </div>
                         
-                        <a href="<?php echo e(route('cart.add', $item->id)); ?>" 
-                        class="bg-yellow-500 text-black p-3 rounded-xl hover:bg-white hover:scale-110 transition duration-300 shadow-lg shadow-yellow-500/20 active:scale-95">
+                        <button onclick="addToCart(event, <?php echo e($item->id); ?>)" 
+                            class="bg-yellow-500 text-black p-3 rounded-xl hover:bg-white transition duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
                             </svg>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -61,5 +61,44 @@
         </div>
     </div>
 </div>
+
+<script>
+    function addToCart(e, id) {
+        e.preventDefault();
+        fetch(`/add-to-cart/${id}`, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Ganti ID 'cart-badge' sesuai dengan ID angka keranjang di Navbar Anda
+            const badge = document.getElementById('cart-badge'); 
+            if(badge) badge.innerText = data.cart_count;
+        });
+    }
+    function addToCart(e, id) {
+        e.preventDefault();
+        
+        fetch(`/add-to-cart/${id}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update angka di navbar secara instan
+            const badge = document.getElementById('cart-badge');
+            if(badge) {
+                badge.innerText = data.cart_count;
+                // Opsional: Tambah efek animasi sedikit
+                badge.classList.add('scale-125');
+                setTimeout(() => badge.classList.remove('scale-125'), 200);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\LENOVO\Documents\sansflix\sansflix\resources\views/fnb/index.blade.php ENDPATH**/ ?>
