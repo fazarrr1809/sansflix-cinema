@@ -98,19 +98,28 @@ sansflix-cinema/
 ```bash
 composer install
 npm install
+```
 
-2️⃣ Konfigurasi Environment
+### 2️⃣ Konfigurasi Environment
+```bash
 cp .env.example .env
 php artisan key:generate
+```
 
-3️⃣ Migrasi & Seeder Database
+### 3️⃣ Migrasi & Seeder Database
+```bash
 php artisan migrate --seed
+```
 
-4️⃣ Jalankan Aplikasi
+### 4️⃣ Jalankan Aplikasi
+```bash
 php artisan serve
 npm run dev
+```
 Akses aplikasi di browser:
+```bash
 http://127.0.0.1:8000/
+
 
 ---
 📌 Tujuan Project
