@@ -62,7 +62,7 @@ Pengguna dapat memilih film, jadwal, kursi, hingga memesan makanan dan minuman d
 
 Struktur direktori ini mengikuti standar arsitektur **Laravel 11**, yang memisahkan logika bisnis, tampilan, dan konfigurasi secara sistematis:
 
-```text
+### text
 sansflix-cinema/
 ├── app/
 │   ├── Filament/       # Konfigurasi Admin Panel (Resources, Widgets, Pages)
