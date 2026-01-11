@@ -54,7 +54,9 @@
             <div class="flex items-center space-x-6">
                 <a href="/" class="text-gray-300 hover:text-white transition">Home</a>
                 <a href="<?php echo e(route('news.index')); ?>" class="text-gray-300 hover:text-white transition">News</a>
-                <a href="#" class="text-gray-300 hover:text-white transition">Promo</a>
+                <nav>
+                    <a href="<?php echo e(route('home')); ?>#promos" class="hover:text-primary">Promo</a>
+                </nav>
                 
                 <a href="<?php echo e(route('fnb.index')); ?>" 
                     class="group relative flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 hover:border-yellow-500 hover:bg-yellow-500 transition-all duration-300">

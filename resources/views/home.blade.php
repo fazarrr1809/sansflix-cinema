@@ -30,7 +30,6 @@
     </div>
 
     <div id="daftar-film" class="container mx-auto px-4 py-16 flex-grow">
-            
         {{-- BAGIAN 1: SEDANG TAYANG --}}
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-white flex items-center gap-2">
@@ -131,87 +130,94 @@
         </section>
     </div>
 
-    
     {{-- NEWS SECTION --}}
-<section class="py-14 bg-gray-900 border-t border-gray-800">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-black text-white mb-10 flex items-center gap-3 italic uppercase tracking-tighter">
-            <span class="w-10 h-1 bg-red-600"></span> Sansflix News
-        </h2>
+    <section class="py-14 bg-gray-900 border-t border-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-black text-white mb-10 flex items-center gap-3 italic uppercase tracking-tighter">
+                <span class="w-10 h-1 bg-red-600"></span> Sansflix News
+            </h2>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            {{-- Headline (1 Berita Utama) --}}
-            @if(isset($latestNews[0]))
-            <a href="{{ route('news.show', $latestNews[0]->slug) }}" class="lg:col-span-8 group block h-full">
-                <div class="relative overflow-hidden rounded-3xl aspect-video border border-gray-800 h-full">
-                    <img src="{{ $latestNews[0]->thumbnail_url }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent"></div>
-                    <div class="absolute bottom-0 p-8 w-full">
-                        <span class="bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase mb-4 inline-block">Hot News</span>
-                        <h3 class="text-xl md:text-3xl font-black text-white mb-3 group-hover:text-red-500 transition line-clamp-2 leading-tight">
-                            {{ $latestNews[0]->title }}
-                        </h3>
-                        <p class="text-gray-400 text-sm line-clamp-2 hidden md:block">{{ Str::limit(strip_tags($latestNews[0]->content), 150) }}</p>
-                    </div>
-                </div>
-            </a>
-            @endif
-
-            {{-- Sidebar (3 Berita Samping) --}}
-            <div class="lg:col-span-4 flex flex-col justify-between gap-4">
-                @foreach($latestNews->skip(1)->take(3) as $news)
-                    {{-- items-center untuk sejajar vertikal, border-b untuk garis bawah --}}
-                    <div class="flex items-center gap-5 group cursor-pointer border-b border-gray-800/50 pb-6 last:border-0 last:pb-0">
-                        
-                        {{-- Wadah Thumbnail --}}
-                        <div class="w-32 h-24 flex-shrink-0 overflow-hidden rounded-2xl border border-gray-800">
-                            <img src="{{ $news->thumbnail_url }}" 
-                                class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                                alt="{{ $news->title }}">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                @if(isset($latestNews[0]))
+                <a href="{{ route('news.show', $latestNews[0]->slug) }}" class="lg:col-span-8 group block h-full">
+                    <div class="relative overflow-hidden rounded-3xl aspect-video border border-gray-800 h-full">
+                        <img src="{{ $latestNews[0]->thumbnail_url }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent"></div>
+                        <div class="absolute bottom-0 p-8 w-full">
+                            <span class="bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase mb-4 inline-block">Hot News</span>
+                            <h3 class="text-xl md:text-3xl font-black text-white mb-3 group-hover:text-red-500 transition line-clamp-2 leading-tight">
+                                {{ $latestNews[0]->title }}
+                            </h3>
+                            <p class="text-gray-400 text-sm line-clamp-2 hidden md:block">{{ Str::limit(strip_tags($latestNews[0]->content), 150) }}</p>
                         </div>
-                        
-                        {{-- Wadah Teks Berita (Sejajar Vertikal dengan Thumbnail) --}}
-                        <div class="flex flex-col justify-center flex-grow min-w-0">
-                            <h4 class="text-white font-bold text-base leading-tight line-clamp-2 group-hover:text-red-500 transition duration-300">
-                                {{ $news->title }}
-                            </h4>
-                            <div class="flex items-center gap-2 mt-3">
-                                {{-- Dot Merah kecil sebagai aksen profesional --}}
-                                <span class="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
-                                <span class="text-gray-500 text-[10px] uppercase tracking-widest font-bold">
-                                    {{ $news->created_at->diffForHumans() }}
-                                </span>
+                    </div>
+                </a>
+                @endif
+
+                <div class="lg:col-span-4 flex flex-col justify-between gap-4">
+                    @foreach($latestNews->skip(1)->take(3) as $news)
+                        <a href="{{ route('news.show', $news->slug) }}" class="flex items-center gap-5 group cursor-pointer border-b border-gray-800/50 pb-6 last:border-0 last:pb-0">
+                            <div class="w-32 h-24 flex-shrink-0 overflow-hidden rounded-2xl border border-gray-800">
+                                <img src="{{ $news->thumbnail_url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="{{ $news->title }}">
                             </div>
-                        </div>
-                        
-                    </div>
+                            <div class="flex flex-col justify-center flex-grow min-w-0">
+                                <h4 class="text-white font-bold text-base leading-tight line-clamp-2 group-hover:text-red-500 transition duration-300">
+                                    {{ $news->title }}
+                                </h4>
+                                <div class="flex items-center gap-2 mt-3">
+                                    <span class="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                                    <span class="text-gray-500 text-[10px] uppercase tracking-widest font-bold">
+                                        {{ $news->created_at->diffForHumans() }}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
                     @endforeach
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
     {{-- PROMO SECTION --}}
-    <section class="py-14 bg-gray-900">
+    <section id="promos" class="py-14 bg-gray-900 border-t border-gray-800">
         <div class="container mx-auto px-4">
-            <h2 class="text-2xl font-bold text-white mb-8 border-l-4 border-yellow-500 pl-4">Promo Menarik</h2>
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-white border-l-4 border-yellow-500 pl-4 uppercase tracking-wider">
+                    Promo Menarik
+                </h2>
+            </div>
+
             <div class="swiper promoSwiper">
                 <div class="swiper-wrapper">
                     @foreach($activePromos as $promo)
                         <div class="swiper-slide">
-                            <div class="relative group bg-gray-800 rounded-3xl overflow-hidden border border-gray-700 shadow-2xl transition-transform duration-300">
-                                <img src="{{ $promo->thumbnail_url }}" class="w-full h-56 md:h-72 object-cover">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-                                <div class="absolute bottom-0 left-0 p-6 w-full">
-                                    <span class="text-xs font-black bg-yellow-500 text-black px-3 py-1 rounded-full uppercase tracking-tighter">PROMO</span>
-                                    <h3 class="text-2xl font-black text-white mt-2 italic uppercase tracking-tighter">{{ $promo->title }}</h3>
-                                    <p class="text-gray-300 text-sm mt-1">Berlaku hingga: <span class="text-yellow-500 font-bold">{{ $promo->expired_at->format('d M Y') }}</span></p>
+                            <a href="{{ route('promo.detail', $promo->slug) }}" class="block">
+                                <div class="relative group bg-gray-800 rounded-3xl overflow-hidden border border-gray-700 shadow-2xl transition-all duration-500 hover:border-yellow-500/50">
+                                    <img src="{{ $promo->thumbnail_url }}" class="w-full h-56 md:h-72 object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent opacity-90"></div>
+                                    <div class="absolute bottom-0 left-0 p-6 w-full">
+                                        <span class="inline-block text-[10px] font-black bg-yellow-500 text-black px-3 py-1 rounded-md uppercase tracking-tighter mb-3 shadow-lg">Limited Offer</span>
+                                        <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter line-clamp-1 group-hover:text-yellow-500 transition-colors">
+                                            {{ $promo->title }}
+                                        </h3>
+                                        <div class="flex items-center mt-2 text-gray-300 text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                            Berlaku hingga: 
+                                            <span class="ml-1 text-yellow-500 font-bold">
+                                                {{ is_string($promo->expired_at) ? \Carbon\Carbon::parse($promo->expired_at)->format('d M Y') : $promo->expired_at->format('d M Y') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-lg">
+                                        <p class="text-[10px] text-gray-400 uppercase">Code</p>
+                                        <p class="text-xs font-mono text-white font-bold">{{ $promo->promo_code }}</p>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     @endforeach
                 </div>
-                <div class="swiper-pagination"></div>
+                <div class="swiper-pagination !relative !bottom-0 mt-8"></div>
             </div>
         </div>
     </section>
@@ -245,10 +251,23 @@
 
             new Swiper(".promoSwiper", {
                 slidesPerView: 1,
-                spaceBetween: 20,
-                autoplay: { delay: 3000 },
+                spaceBetween: 24,
+                grabCursor: true,
+                loop: true,
+                speed: 800,
+                autoplay: {
+                    delay: 4000,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                    dynamicBullets: true,
+                },
                 breakpoints: {
                     768: { slidesPerView: 2 },
+                    1280: { slidesPerView: 2 },
                 },
             });
         });

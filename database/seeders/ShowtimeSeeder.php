@@ -5,50 +5,66 @@ namespace Database\Seeders;
 use App\Models\Movie;
 use App\Models\Auditorium;
 use App\Models\Showtime;
-use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class ShowtimeSeeder extends Seeder
 {
-        public function run(): void
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
-        $movies = Movie::all(); 
-        $studios = Auditorium::all();
+        // Ambil semua film dan auditorium yang ada
+        $movies = Movie::all();
+        $auditoriums = Auditorium::all();
 
-        if ($movies->isEmpty() || $studios->isEmpty()) {
-            $this->command->error("Gagal: Data Movie atau Auditorium tidak ditemukan!");
+        if ($movies->isEmpty() || $auditoriums->isEmpty()) {
+            $this->command->info('Data Movie atau Auditorium kosong. Silakan isi terlebih dahulu.');
             return;
         }
 
-        $timeSlots = ['10:00', '13:00', '16:00', '19:00', '21:30'];
+        // Loop untuk 7 hari ke depan
+        for ($i = 0; $i < 7; $i++) {
+            $date = Carbon::now()->addDays($i);
+            $isWeekend = $date->isWeekend();
 
-        foreach (range(0, 6) as $day) {
-            $date = Carbon::today()->addDays($day);
+            foreach ($auditoriums as $auditorium) {
+                // Tentukan harga dasar berdasarkan nama studio (case insensitive)
+                $isPremier = str_contains(strtolower($auditorium->name), 'premier');
+                
+                // Logika Harga:
+                // Reguler: Weekday 35k, Weekend 50k
+                // Premier: Weekday 75k, Weekend 100k
+                if ($isPremier) {
+                    $basePrice = $isWeekend ? 100000 : 75000;
+                } else {
+                    $basePrice = $isWeekend ? 50000 : 35000;
+                }
 
-            foreach ($studios as $studio) {
-                $selectedMovie = $movies->random();
+                // Pilih 2-3 film secara acak untuk diputar di studio ini dalam sehari
+                $dailyMovies = $movies->random(min(2, $movies->count()));
 
-                foreach ($timeSlots as $time) {
-                    $startTime = Carbon::parse($date->format('Y-m-d') . ' ' . $time);
+                // Tentukan jam tayang (Misal: 13:00, 16:00, 19:00, 21:00)
+                $slots = ['13:00', '16:00', '19:00', '21:30'];
+
+                foreach ($slots as $index => $time) {
+                    $movie = ($index % 2 == 0) ? $dailyMovies->first() : $dailyMovies->last();
                     
-                    // --- LOGIKA DURASI OTOMATIS ---
-                    // Mengambil kolom 'duration' (dalam menit) dari tabel movies
-                    // Jika data duration kosong, default ke 120 menit
-                    $duration = $selectedMovie->duration ?? 120; 
-                    
-                    // ends_at = starts_at + durasi film + 30 menit (jeda bersih-bersih studio)
-                    $endTime = (clone $startTime)->addMinutes($duration + 30);
+                    $startAt = Carbon::parse($date->format('Y-m-d') . ' ' . $time);
+                    $endAt = (clone $startAt)->addHours(2); // Durasi default 2 jam
 
                     Showtime::create([
-                        'movie_id'      => $selectedMovie->id,
-                        'auditorium_id' => $studio->id,
-                        'starts_at'     => $startTime,
-                        'ends_at'       => $endTime,
-                        'ticket_price'  => $date->isWeekend() ? 60000 : 50000,
+                        'movie_id' => $movie->id,
+                        'auditorium_id' => $auditorium->id,
+                        'starts_at' => $startAt,
+                        'ends_at' => $endAt,
+                        'ticket_price' => $basePrice,
                     ]);
                 }
             }
         }
-        $this->command->info("Showtime berhasil dibuat berdasarkan durasi film masing-masing!");
+
+        $this->command->info('Berhasil menambahkan data Showtime untuk 7 hari ke depan.');
     }
 }

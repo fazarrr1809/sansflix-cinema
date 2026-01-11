@@ -37,4 +37,10 @@ class HomeController extends Controller
 
         return view('movie_detail', compact('movie'));
     }
+    public function promoDetail($slug)
+    {
+        $promo = \App\Models\Promo::where('slug', $slug)->firstOrFail();
+        
+        return view('promo_detail', compact('promo'));
+    }
 }

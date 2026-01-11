@@ -15,6 +15,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show'); // Rute ini yang dicari!
 Route::get('/movies/{id}', [HomeController::class, 'show'])->name('movies.show');
+Route::get('/promo/{slug}', [App\Http\Controllers\HomeController::class, 'promoDetail'])->name('promo.detail');
 
 // Rute Auth (Login/Register)
 Route::middleware('guest')->group(function () {
@@ -67,4 +68,7 @@ Route::middleware('auth')->group(function () {
     //update avatar user
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    //Route Promo
+    
 });

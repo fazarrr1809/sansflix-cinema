@@ -14,5 +14,6 @@ class Promo extends Model
     // Tambahkan ini agar expired_at otomatis menjadi objek Carbon
     protected $casts = [
         'expired_at' => 'date',
+        'is_active' => 'boolean',
     ];
 }

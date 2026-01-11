@@ -1,48 +1,134 @@
-# 🎬 Sansflix Cinema - Modern Movie Ticket & F&B Booking System
+# 🎬 Sansflix Cinema  
+**Modern Online Cinema Ticket & Food Booking Platform**
 
 <p align="center">
   <img src="https://fazarrizwanuli.wordpress.com/wp-content/uploads/2026/01/sansflix-logo.png.png?w=1024" width="300" alt="Sansflix Logo">
 </p>
 
-## 🚀 Tentang Proyek
-**Sansflix Cinema** adalah platform manajemen bioskop digital yang memungkinkan pengguna memesan tiket film dan makanan secara daring. Aplikasi ini dirancang untuk memberikan pengalaman "Movie Night" yang mulus, mulai dari pemilihan kursi hingga pencetakan e-tiket.
+Sansflix Cinema adalah aplikasi web berbasis **Laravel** yang dirancang untuk memberikan pengalaman pemesanan tiket bioskop dan makanan secara **mudah, cepat, dan modern**.  
+Pengguna dapat memilih film, jadwal, kursi, hingga memesan makanan dan minuman dalam satu sistem terpadu.
 
 ---
 
-## ✨ Fitur Utama
+## 🚀 Fitur Utama
 
-### 👤 Fitur Pengguna (Frontend)
-- **Smart Booking System**: Pilih kursi bioskop secara interaktif berdasarkan jadwal tayang.
-- **Concessions (F&B)**: Pesan camilan seperti popcorn dan minuman sebelum menonton.
-- **Social Login**: Masuk instan menggunakan akun Google (OAuth2).
-- **Personalized Profile**: Kelola identitas, unggah avatar, dan pantau usia (min. 15 tahun).
-- **History & E-Ticket**: Lihat riwayat pesanan dan unduh tiket dalam format PDF.
-
-### 🛠️ Fitur Admin (Filament Dashboard)
-- **User Management**: Pantau data pengguna, hitung umur otomatis, dan manajemen keamanan.
-- **Movie & Schedule**: Kelola daftar film, studio, dan jam tayang.
-- **Food Inventory**: Kelola stok dan menu makanan/minuman.
-- **Order Tracking**: Monitoring transaksi tiket dan makanan secara real-time.
-
----
-
-## 🛠️ Tech Stack
-- **Framework**: [Laravel 12](https://laravel.com)
-- **Admin Panel**: [Filament PHP v3](https://filamentphp.com)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com) & [Alpine.js](https://alpinejs.dev)
-- **Database**: MySQL / MariaDB
-- **Integrasi**: Laravel Socialite (Google Login), DomPDF (Export Ticket)
+### 👤 Fitur Pengguna
+- 🎟️ **Booking Tiket Bioskop Online**
+  - Pilih film, studio, jadwal, dan kursi secara interaktif
+- 🍿 **Pemesanan Food & Beverages**
+  - Pesan snack dan minuman bersamaan dengan tiket
+- 📄 **E-Ticket & Struk PDF**
+  - Tiket dan bukti pembayaran otomatis dalam format PDF
+- 🔐 **Login dengan Google (OAuth)**
+  - Autentikasi cepat dan aman tanpa registrasi manual
+- 👤 **Profil Pengguna**
+  - Upload avatar dan kelola data akun
+- 🔞 **Validasi Umur**
+  - Sistem memastikan pengguna memenuhi batas usia minimal (15 tahun)
 
 ---
 
-## 📦 Panduan Instalasi Lokal
+### 🛠️ Fitur Admin (Dashboard)
+- 🎬 Manajemen film, studio, dan jadwal tayang
+- 👥 Manajemen pengguna
+- 🍔 Manajemen menu & stok makanan
+- 📦 Monitoring transaksi tiket dan F&B
+- 📊 Dashboard berbasis **Filament Admin Panel**
 
-Ikuti langkah-langkah di bawah untuk menjalankan Sansflix di komputer Anda:
+---
 
-1. **Clone Repository**
-   ```bash
-   git clone [https://github.com/fazarrr1809/sansflix-cinema.git](https://github.com/fazarrr1809/sansflix-cinema.git)
-   cd sansflix-cinema
-2. **Instal Dependensi (PHP & JS)**
-   composer install
-   npm install && npm run build
+## 🧩 Teknologi yang Digunakan
+
+### Backend
+- **Laravel 12**
+- PHP 8+
+- MySQL / MariaDB
+
+### Frontend
+- Tailwind CSS
+- Alpine.js
+- Swiper.js
+- Vite
+
+### Tools & Library
+- Filament (Admin Panel)
+- Laravel Socialite (Google OAuth)
+- DomPDF (Export PDF)
+- PHPUnit (Testing)
+
+---
+
+## 📂 Struktur Project
+sansflix-cinema/
+├── app/ # Logic aplikasi (Controller, Model, Service)
+├── bootstrap/
+├── config/
+├── database/ # Migration & Seeder
+├── public/ # Asset publik
+├── resources/ # Blade views & frontend assets
+├── routes/ # Routing web
+├── tests/
+├── .env.example
+├── composer.json
+├── package.json
+└── README.md
+
+
+---
+
+## ⚙️ Cara Instalasi
+
+### 1️ Clone Repository
+```bash
+git clone https://github.com/fazarrr1809/sansflix-cinema.git
+cd sansflix-cinema
+
+### 2️⃣ Install Dependency
+''' bash
+composer install
+npm install
+
+### 3️⃣ Konfigurasi Environment
+''' bash
+cp .env.example .env
+php artisan key:generate
+Atur konfigurasi database pada file .env
+
+### 4️⃣ Migrasi & Seeder Database
+''' bash
+php artisan migrate --seed
+
+### 5️⃣ Jalankan Aplikasi
+''' bash
+php artisan serve
+npm run dev
+
+Akses aplikasi di:
+http://127.0.0.1:8000/
+
+
+📌 Tujuan Project
+
+Project ini dikembangkan sebagai:
+
+🎓 Project akademik
+
+💼 Portofolio pengembangan web
+
+🧪 Simulasi sistem booking bioskop modern
+
+Seluruh data, transaksi, dan tampilan bersifat simulasi/fiktif.
+
+.
+
+🔒 Catatan Keamanan
+
+Pastikan .env tidak diunggah ke repository
+
+OAuth Google memerlukan konfigurasi client ID & secret sendiri
+
+📜 Lisensi
+Project ini dibuat untuk keperluan pembelajaran dan pengembangan.
+Silakan gunakan dan modifikasi sesuai kebutuhan.
+
+
