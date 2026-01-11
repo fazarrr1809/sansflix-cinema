@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log; // Wajib ada untuk debugging
+use Illuminate\Support\Facades\Log;
 use App\Mail\BookingSuccessMail;
 
 class BookingController extends Controller
@@ -36,7 +36,6 @@ class BookingController extends Controller
     // --- 2. PROSES TRANSAKSI (SIMPAN DATA BOOKING) ---
     public function store(Request $request)
     {
-        // A. Validasi Input
         $request->validate([
             'showtime_id' => 'required|exists:showtimes,id',
             'seats' => 'required|array|min:1',
@@ -48,11 +47,9 @@ class BookingController extends Controller
         try {
             DB::beginTransaction();
 
-            // B. Hitung Harga
             $totalTicket = count($request->seats);
             $totalPrice = $totalTicket * $showtime->ticket_price;
 
-            // C. Buat Booking (Status PENDING)
             $booking = Booking::create([
                 'booking_code' => 'BOOK-' . strtoupper(uniqid()),
                 'showtime_id' => $showtime->id,
@@ -60,14 +57,13 @@ class BookingController extends Controller
                 'customer_email' => Auth::user()->email,
                 'total_tickets' => $totalTicket,
                 'total_price' => $totalPrice,
-                'status' => 'pending', // Belum lunas
+                'status' => 'pending', 
             ]);
 
-            // D. Simpan Detail Kursi
             foreach ($request->seats as $seatId) {
                 $seat = Seat::find($seatId);
                 
-                // Cek apakah kursi sudah diambil orang lain (Race Condition)
+                // Cek Race Condition
                 $isTaken = BookingDetail::whereHas('booking', function($q) use ($showtime) {
                     $q->where('showtime_id', $showtime->id);
                 })->where('seat_id', $seatId)->exists();
@@ -83,12 +79,8 @@ class BookingController extends Controller
                     'price' => $showtime->ticket_price,
                 ]);
             }
-
-            // CATATAN: Kode Midtrans sudah dihapus di sini agar lebih efisien.
             
-            DB::commit(); // Simpan ke database
-
-            // Redirect ke halaman sukses (User akan diminta pilih pembayaran di sana)
+            DB::commit();
             return redirect()->route('booking.success', $booking->id);
 
         } catch (\Exception $e) {
@@ -97,76 +89,61 @@ class BookingController extends Controller
         }
     }
 
-    // --- 3. PROSES BAYAR (SIMULASI DENGAN PILIHAN METODE) ---
-    // Fungsi ini dipanggil saat user klik tombol "Bayar Sekarang" di halaman success
+    // --- 3. PROSES BAYAR ---
     public function payNow(Request $request, $id)
     {
-        // Validasi: User harus memilih salah satu metode
         $request->validate([
             'payment_method' => 'required|string'
         ]);
 
-        // Cari data booking
         $booking = Booking::with(['showtime.movie', 'details'])->findOrFail($id);
 
-        // Update status LUNAS & Simpan Metode Pembayarannya
         $booking->update([
             'status' => 'paid',
             'payment_method' => $request->payment_method
         ]);
 
-        // --- KIRIM EMAIL TIKET ---
         try {
-            // Beri waktu ekstra (5 menit) agar pembuatan PDF tidak timeout
             set_time_limit(300); 
-            
-            // Buat PDF
             $pdf = Pdf::loadView('pdf_ticket', compact('booking'));
             
-            // Kirim ke Email User
             Mail::to($booking->customer_email)->send(
                 new BookingSuccessMail($booking, $pdf->output())
             );
 
             Log::info("Email tiket berhasil dikirim ke: " . $booking->customer_email);
-
         } catch (\Exception $e) {
-            // Jika email gagal, jangan error kan aplikasinya. Cukup catat di log.
             Log::error('Gagal kirim email: ' . $e->getMessage());
         }
 
-        // Kembali ke halaman yang sama dengan pesan sukses
-        return back()->with('success', 'Pembayaran via ' . strtoupper($request->payment_method) . ' Berhasil! Tiket dikirim ke email.');
+        return back()->with('success', 'Pembayaran via ' . strtoupper($request->payment_method) . ' Berhasil!');
     }
 
     // --- 4. HALAMAN TIKET SUKSES ---
     public function success($id)
     {
         $booking = Booking::with(['showtime.movie', 'details'])->findOrFail($id);
-        return view('booking_success', compact('booking'));
+        $expiredTime = $booking->created_at->addMinutes(15)->toIso8601String();
+        return view('booking_success', compact('booking', 'expiredTime'));
     }
 
-    // --- 5. RIWAYAT ---
+    // --- 5. RIWAYAT & TIKET ---
     public function showTicket($id)
     {
-        // 1. Cari booking berdasarkan ID dan Email User
         $booking = Booking::with(['showtime.movie', 'showtime.auditorium', 'details'])
                     ->where('customer_email', Auth::user()->email) 
                     ->findOrFail($id);
 
-        // 2. VALIDASI STATUS: Jika belum lunas, lempar kembali ke halaman pembayaran
         if ($booking->status !== 'paid') {
             return redirect()->route('booking.success', $id)
-                ->with('error', 'Silakan selesaikan pembayaran terlebih dahulu untuk melihat tiket.');
+                ->with('error', 'Silakan selesaikan pembayaran terlebih dahulu.');
         }
 
-        // 3. Jika sudah lunas, baru tampilkan halaman tiket
         return view('booking_ticket', compact('booking'));
     }
 
     public function history()
     {
-        // Sesuaikan juga fungsi history agar tidak error
         $bookings = Booking::with(['showtime.movie', 'showtime.auditorium'])
                     ->where('customer_email', Auth::user()->email)
                     ->latest()
@@ -175,15 +152,36 @@ class BookingController extends Controller
         return view('history', compact('bookings'));
     }
 
-    // --- 6. DOWNLOAD PDF ---
+    // --- 6. PEMBATALAN ---
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
+        
+        if ($booking->status == 'pending') {
+            $showtime_id = $booking->showtime_id;
+            $booking->details()->delete(); 
+            $booking->delete(); 
+
+            return redirect()->route('booking.seats', $showtime_id)
+                             ->with('info', 'Transaksi dibatalkan. Silakan pilih kursi kembali.');
+        }
+
+        return redirect()->route('home');
+    }
+
+    public function expire($id) 
+    {
+        $booking = Booking::findOrFail($id);
+        if ($booking->status == 'pending') {
+            $booking->details()->delete();
+            $booking->delete();
+        }
+        return redirect()->route('home')->with('error', 'Waktu pembayaran telah habis.');
+    }
+
+    // --- 7. DOWNLOAD PDF ---
     public function downloadPdf($id)
     {
-        $booking = Booking::with(['showtime.movie', 'details'])->findOrFail($id);
-
-        if ($booking->customer_email !== Auth::user()->email) {
-            abort(403, 'Akses ditolak');
-        }
-        
         $booking = Booking::where('customer_email', Auth::user()->email)->findOrFail($id);
 
         if ($booking->status !== 'paid') {
@@ -191,8 +189,6 @@ class BookingController extends Controller
         }
 
         $pdf = Pdf::loadView('pdf_ticket', compact('booking'));
-
         return $pdf->download('Tiket-Sansflix-' . $booking->booking_code . '.pdf');
     }
-
 }

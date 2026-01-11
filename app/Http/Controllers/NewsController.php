@@ -23,7 +23,7 @@ class NewsController extends Controller
         $otherNews = News::where('id', '!=', $news->id)
                          ->where('is_active', true)
                          ->latest()
-                         ->take(3)
+                         ->take(4)
                          ->get();
 
         return view('news.show', compact('news', 'otherNews'));

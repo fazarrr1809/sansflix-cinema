@@ -10,11 +10,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
 
 
     <style>
@@ -96,10 +99,18 @@
                         </button>
 
                         <div x-show="open" 
+                            x-show="open" 
+                            @click.outside="open = false" 
                             x-transition:enter="transition ease-out duration-100"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100"
-                            class="absolute right-0 mt-3 w-52 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl py-2 z-50">
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 mt-3 w-52 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl py-2 z-50"
+                            style="display: none;"
+                            >
+                            
                             
                             <div class="px-4 py-3 border-b border-white/5 mb-2 text-left">
                                 <p class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Hallo,</p>
@@ -115,7 +126,7 @@
 
                             <a href="<?php echo e(route('booking.history')); ?>" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-red-600 hover:text-white transition group text-left">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 6a3 3 0 00-3-3H6.75a3 3 0 00-3 3v12a3 3 0 003 3h6.75a3 3 0 003-3V6zM3.75 9h16.5M3.75 15h16.5" />
                                 </svg>
                                 Tiket Saya
                             </a>

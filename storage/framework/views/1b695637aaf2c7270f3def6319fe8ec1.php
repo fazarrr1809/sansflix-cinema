@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Pembayaran - Sansflix Cinema')
 
-@section('content')
+<?php $__env->startSection('title', 'Pembayaran - Sansflix Cinema'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="bg-gray-900 min-h-screen flex items-center justify-center p-4 pt-20 pb-10">
     <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden border border-gray-700 flex flex-col md:flex-row">
     <style>
@@ -33,51 +33,51 @@
             
             <div class="flex items-start gap-4 mb-6">
                <div class="w-20 h-28 bg-gray-700 rounded-lg overflow-hidden shadow-lg relative flex-shrink-0">
-                    @if($booking->showtime->movie->poster_url)
-                        <img src="{{ $booking->showtime->movie->poster_url }}"
-                            alt="{{ $booking->showtime->movie->title }}"
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($booking->showtime->movie->poster_url): ?>
+                        <img src="<?php echo e($booking->showtime->movie->poster_url); ?>"
+                            alt="<?php echo e($booking->showtime->movie->title); ?>"
                             class="w-full h-full object-cover rounded-lg">
-                    @else
+                    <?php else: ?>
                         <div class="w-full h-full bg-gray-700 rounded-lg flex items-center justify-center">
                             <span class="text-xs text-gray-400">No Image</span>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
                 <div>
-                    <h2 class="text-white font-bold text-lg leading-tight mb-1">{{ $booking->showtime->movie->title }}</h2>
-                    <p class="text-gray-400 text-xs mt-1">{{ $booking->showtime->auditorium->name }}</p>
+                    <h2 class="text-white font-bold text-lg leading-tight mb-1"><?php echo e($booking->showtime->movie->title); ?></h2>
+                    <p class="text-gray-400 text-xs mt-1"><?php echo e($booking->showtime->auditorium->name); ?></p>
                 </div>
             </div>
 
             <div class="space-y-3 text-sm text-gray-300 border-t border-gray-700 pt-4">
                 <div class="flex justify-between">
                     <span>Kode Booking</span>
-                    <span class="font-mono text-white tracking-wide">{{ substr($booking->booking_code, -8) }}</span>
+                    <span class="font-mono text-white tracking-wide"><?php echo e(substr($booking->booking_code, -8)); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span>Kursi</span>
                     <span class="text-white font-bold">
-                         @foreach($booking->details as $detail)
-                            {{ $detail->seat_number }}{{ !$loop->last ? ',' : '' }} 
-                        @endforeach
+                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $booking->details; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $detail): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php echo e($detail->seat_number); ?><?php echo e(!$loop->last ? ',' : ''); ?> 
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </span>
                 </div>
                 <div class="flex justify-between">
                     <span>Jadwal</span>
-                    <span class="text-white">{{ $booking->showtime->starts_at->format('d M, H:i') }}</span>
+                    <span class="text-white"><?php echo e($booking->showtime->starts_at->format('d M, H:i')); ?></span>
                 </div>
             </div>
 
             <div class="mt-8 pt-4 border-t border-dashed border-gray-600">
                 <p class="text-gray-400 text-sm mb-1">Total Pembayaran</p>
-                <h1 class="text-3xl font-extrabold text-white">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</h1>
+                <h1 class="text-3xl font-extrabold text-white">Rp <?php echo e(number_format($booking->total_price, 0, ',', '.')); ?></h1>
             </div>
         </div>
 
         <div class="w-full md:w-2/3 p-8 relative bg-gray-50 text-gray-800">
             
-            @if($booking->status == 'pending')
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($booking->status == 'pending'): ?>
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-bold text-gray-800">Pilih Metode Pembayaran</h2>
                     <span id="payment-countdown" class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded border border-red-200 animate-pulse font-semibold">
@@ -85,8 +85,8 @@
                     </span>
                 </div>
 
-                <form action="{{ route('booking.payNow', $booking->id) }}" method="POST" id="payment-form">
-                    @csrf
+                <form action="<?php echo e(route('booking.payNow', $booking->id)); ?>" method="POST" id="payment-form">
+                    <?php echo csrf_field(); ?>
                     
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
                         <label class="cursor-pointer relative">
@@ -160,7 +160,7 @@
                         <div id="detail-qris" class="hidden detail-section text-center">
                             <p class="text-sm text-gray-500 mb-3">Scan QR di bawah ini dengan Mobile Banking / E-Wallet Anda:</p>
                             <div class="bg-white p-3 inline-block rounded-lg mb-2 border">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $booking->booking_code }}" class="w-32 h-32">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?php echo e($booking->booking_code); ?>" class="w-32 h-32">
                             </div>
                             <p class="text-xs text-gray-400 mt-2">NMID: ID102030405060</p>
                         </div>
@@ -168,7 +168,7 @@
                         <div id="detail-va" class="hidden detail-section">
                             <p class="text-sm text-gray-500 mb-2">Nomor Virtual Account:</p>
                             <div class="flex items-center justify-between bg-gray-100 p-3 rounded-lg border border-gray-300 mb-3">
-                                <span class="font-mono text-xl text-blue-600 font-bold tracking-wider" id="va-number">88000{{ mt_rand(100000, 999999) }}</span>
+                                <span class="font-mono text-xl text-blue-600 font-bold tracking-wider" id="va-number">88000<?php echo e(mt_rand(100000, 999999)); ?></span>
                                 <button type="button" class="text-xs text-blue-500 hover:text-blue-700 uppercase font-bold">Salin</button>
                             </div>
                             <p class="text-xs text-gray-400">Menerima transfer dari ATM, Mobile Banking, dan Internet Banking.</p>
@@ -183,7 +183,7 @@
                         <div id="detail-retail" class="hidden detail-section">
                             <p class="text-sm text-gray-500 mb-2">Kode Pembayaran (Tunjukkan ke Kasir):</p>
                             <div class="bg-gray-100 p-3 rounded-lg border border-gray-300 mb-3 text-center">
-                                <span class="font-mono text-2xl text-orange-600 font-bold tracking-widest">SNX-{{ mt_rand(1000, 9999) }}</span>
+                                <span class="font-mono text-2xl text-orange-600 font-bold tracking-widest">SNX-<?php echo e(mt_rand(1000, 9999)); ?></span>
                             </div>
                             <p class="text-xs text-gray-400">Beritahu kasir ingin membayar tagihan "Merchant Sansflix".</p>
                         </div>
@@ -191,21 +191,21 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         
-                       {{-- Ganti href lama anda dengan ini --}}
+                       
                     <a href="javascript:void(0)" 
                     id="btn-cancel-booking"
                     class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-4 rounded-xl text-center transition-all uppercase tracking-tight">
                         Batalkan
                     </a>
                         
-                        {{-- Tombol Bayar --}}
+                        
                         <button type="submit" id="btn-confirm" class="bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                             Konfirmasi Pembayaran
                         </button>
                     </div>
                 </form>
 
-            @elseif($booking->status == 'paid')
+            <?php elseif($booking->status == 'paid'): ?>
                 <div class="h-full flex flex-col items-center justify-center py-10 text-center">
                     <div class="checkmark-container">
                         <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
@@ -219,11 +219,11 @@
 
                     <div class="w-full bg-white border border-gray-200 rounded-xl p-4 mb-8 flex justify-between items-center shadow-sm">
                         <span class="text-gray-500 text-sm">Metode Pembayaran</span>
-                        <span class="font-bold text-blue-600 uppercase tracking-wider">{{ $booking->payment_method ?? 'MANUAL' }}</span>
+                        <span class="font-bold text-blue-600 uppercase tracking-wider"><?php echo e($booking->payment_method ?? 'MANUAL'); ?></span>
                     </div>
 
                     <div class="w-full space-y-3">
-                        <a href="{{ route('booking.pdf', $booking->id) }}" class="block w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                        <a href="<?php echo e(route('booking.pdf', $booking->id)); ?>" class="block w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                             Download E-Ticket
                         </a>
@@ -253,11 +253,11 @@
                         });
                     </script>
                 </div>
-            @else
+            <?php else: ?>
                  <div class="bg-red-900/50 border border-red-500 text-red-200 p-6 rounded-xl text-center">
                     <p class="font-bold">Transaksi Dibatalkan</p>
                  </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </div>
 </div>
@@ -295,7 +295,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             // Ambil waktu expired dari Laravel (dikirim lewat controller)
             // Jika belum ada di controller, kita buat simulasi 15 menit dari sekarang
-            const expiredDate = new Date("{{ $expiredTime ?? now()->addMinutes(15)->toIso8601String() }}").getTime();
+            const expiredDate = new Date("<?php echo e($expiredTime ?? now()->addMinutes(15)->toIso8601String()); ?>").getTime();
             const countdownDisplay = document.getElementById('payment-countdown');
 
             const x = setInterval(function() {
@@ -319,7 +319,7 @@
                     clearInterval(x);
                     countdownDisplay.innerHTML = "WAKTU HABIS";
                     alert("Sesi pembayaran telah berakhir.");
-                    window.location.href = "{{ route('home') }}"; // Redirect ke home
+                    window.location.href = "<?php echo e(route('home')); ?>"; // Redirect ke home
                 }
             }, 1000);
         });
@@ -337,13 +337,13 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Arahkan ke route cancel yang menghapus data di database
-                window.location.href = "{{ route('booking.cancel', $booking->id) }}";
+                window.location.href = "<?php echo e(route('booking.cancel', $booking->id)); ?>";
             }
         })
     });
         document.addEventListener("DOMContentLoaded", function() {
             // Ambil waktu expired (15 menit dari booking dibuat)
-            const expiredDate = new Date("{{ $booking->created_at->addMinutes(15)->toIso8601String() }}").getTime();
+            const expiredDate = new Date("<?php echo e($booking->created_at->addMinutes(15)->toIso8601String()); ?>").getTime();
             const countdownDisplay = document.getElementById('payment-countdown');
 
             const x = setInterval(function() {
@@ -362,11 +362,12 @@
                     countdownDisplay.innerHTML = "WAKTU HABIS";
                     
                     // Langsung arahkan ke route expire untuk hapus tiket & kursi di DB
-                    window.location.href = "{{ route('booking.expire', $booking->id) }}";
+                    window.location.href = "<?php echo e(route('booking.expire', $booking->id)); ?>";
                 }
             }, 1000);
         });
     </script>
 </body>
 </html>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\LENOVO\Documents\sansflix\sansflix\resources\views/booking_success.blade.php ENDPATH**/ ?>

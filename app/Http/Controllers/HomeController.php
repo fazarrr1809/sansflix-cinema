@@ -13,14 +13,15 @@ class HomeController extends Controller
 {
     $nowPlaying = Movie::where('status', 'now_playing')->latest()->get();
     $comingSoon = Movie::where('status', 'coming_soon')->latest()->get();
-    $latestNews = News::where('is_active', true)->latest()->take(3)->get();
+    $finishedMovies = Movie::where('status', 'expired')->latest()->get();
+    $latestNews = News::where('is_active', true)->latest()->take(4)->get();
     
     // Ambil promo yang masih aktif dan belum expired
     $activePromos = Promo::where('is_active', true)
                          ->where('expired_at', '>=', now())
                          ->latest()->get();
 
-    return view('home', compact('nowPlaying', 'comingSoon', 'latestNews', 'activePromos'));
+    return view('home', compact('nowPlaying', 'comingSoon', 'finishedMovies', 'latestNews', 'activePromos'));
 }
 
     public function show($id)

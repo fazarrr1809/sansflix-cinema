@@ -39,7 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/booking/success/{id}', [BookingController::class, 'success'])->name('booking.success');
     Route::get('/my-tickets', [BookingController::class, 'history'])->name('booking.history');
     Route::post('/booking/{id}/pay-now', [BookingController::class, 'payNow'])->name('booking.payNow');
-    
+    Route::get('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
+    Route::get('/booking/{id}/expire', [BookingController::class, 'expire'])->name('booking.expire');
+    Route::get('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
+
     // Rute F&B / Makanan
     Route::get('/concessions', [FoodBeverageController::class, 'index'])->name('fnb.index');
     Route::get('/food-history', [CartController::class, 'history'])->name('food.history');
