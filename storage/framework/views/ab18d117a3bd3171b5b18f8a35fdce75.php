@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen flex items-center justify-center bg-gray-950 relative overflow-hidden">
     <div class="absolute top-0 left-0 w-96 h-96 bg-red-600/20 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
     <div class="absolute bottom-0 right-0 w-96 h-96 bg-red-900/10 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2"></div>
@@ -14,8 +14,8 @@
                 <p class="text-gray-400 text-sm mt-2 font-medium">Selamat datang kembali di Sansflix Cinema</p>
             </div>
 
-            <form action="{{ route('login') }}" method="POST" class="space-y-6">
-                @csrf
+            <form action="<?php echo e(route('login')); ?>" method="POST" class="space-y-6">
+                <?php echo csrf_field(); ?>
                 <div>
                     <label class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Alamat Email</label>
                     <input type="email" name="email" required 
@@ -41,22 +41,17 @@
                 <span class="relative bg-gray-900 px-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Atau</span>
             </div>
 
-            <a href="{{ route('google.login') }}" 
+            <a href="<?php echo e(route('google.login')); ?>" 
                 class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-bold py-4 rounded-2xl transition duration-300 shadow-xl group">
                 <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-6 h-6" alt="Google">
                 <span>Lanjutkan dengan Google</span>
             </a>
 
             <p class="text-center text-gray-400 text-sm mt-8">
-                Belum punya akun? <a href="{{ route('register') }}" class="text-red-500 font-bold hover:underline">Daftar di sini</a>
+                Belum punya akun? <a href="<?php echo e(route('register')); ?>" class="text-red-500 font-bold hover:underline">Daftar di sini</a>
             </p>
-
-            <div class="flex justify-end mt-2">
-                <a href="{{ route('password.request') }}" class="text-xs text-red-600 hover:underline italic">
-                    Lupa Password?
-                </a>
-            </div>
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\LENOVO\Documents\sansflix\sansflix\resources\views/auth/login.blade.php ENDPATH**/ ?>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage; // Gunakan Storage bukan File
 use Carbon\Carbon;
 
 class ProfileController extends Controller
@@ -14,9 +14,8 @@ class ProfileController extends Controller
         $user = Auth::user();
         
         // Hitung umur otomatis dari kolom dob
-        $age = \Carbon\Carbon::parse($user->dob)->age;
+        $age = Carbon::parse($user->dob)->age;
 
-        // PASTIKAN menggunakan tanda $ di dalam compact
         return view('profile.index', compact('user', 'age')); 
     }
 
@@ -29,11 +28,11 @@ class ProfileController extends Controller
             'username' => 'required|string|unique:users,username,' . $user->id,
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'dob' => $user->dob ? 'nullable' : 'required|date|before:today',
-            'dob.before_or_equal' => 'Maaf, usia minimal untuk mendaftar Sansflix adalah 15 tahun.',
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
         ]);
 
+        // Update Tanggal Lahir jika sebelumnya kosong
         if (!$user->dob && $request->filled('dob')) {
             $user->dob = $request->dob;
         }
@@ -46,20 +45,26 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->new_password);
         }
 
-        // Logika Avatar
+        // Logika Avatar (Sudah diperbaiki agar konsisten)
         if ($request->hasFile('avatar')) {
+            // Hapus foto lama dari storage jika ada
             if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
-                File::delete(public_path('uploads/avatars/' . $user->avatar));
+                Storage::disk('public')->delete('uploads/avatars/' . $user->avatar);
             }
-            $fileName = time() . '_' . $user->id . '.' . $request->avatar->extension();
-            $request->avatar->move(public_path('uploads/avatars'), $fileName);
-            $user->avatar = $fileName;
+
+            // Simpan file baru ke storage/app/public/uploads/avatars
+            $path = $request->file('avatar')->store('uploads/avatars', 'public');
+            
+            // Simpan nama filenya saja ke database
+            $user->avatar = basename($path);
         }
 
+        // Update data dasar (PENTING: Bagian ini harus ada agar nama/username terupdate)
         $user->name = $request->name;
         $user->username = $request->username;
         $user->save();
 
+        // PENTING: Harus ada RETURN agar tidak blank putih
         return back()->with('success', 'Profil dan keamanan berhasil diperbarui!');
     }
 }
